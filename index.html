@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Will you be my Bou Medam Jih? 😭💘</title>
+    <!-- Include necessary CDNs -->
+    <!-- EmailJS for sending emails -->
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <!-- Canvas Confetti for confetti animation -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <!-- YouTube iframe API for background music (Malang Title Song) -->
+    <script src="https://www.youtube.com/iframe_api"></script>
+    <style>
+        /* Romantic pink/red background */
+        body {
+            background: linear-gradient(45deg, #ff69b4, #ff1493, #dc143c);
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+        h1 {
+            color: white;
+            font-size: 3em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            margin-bottom: 50px;
+        }
+        .buttons {
+            display: flex;
+            gap: 50px;
+        }
+        button {
+            font-size: 2em;
+            padding: 20px 40px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: transform 0.3s, font-size 0.3s;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+        #yesBtn {
+            background-color: #ff69b4;
+            color: white;
+        }
+        #noBtn {
+            background-color: #dc143c;
+            color: white;
+            position: relative; /* For running away */
+        }
+        button:hover {
+            transform: scale(1.1);
+        }
+        /* Hide YouTube player initially */
+        #player {
+            position: absolute;
+            top: -9999px;
+            left: -9999px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Will you be my Bou Medam Jih? 😭💘</h1>
+    <div class="buttons">
+        <button id="yesBtn">YES</button>
+        <button id="noBtn">NO</button>
+    </div>
+    <!-- YouTube player for background music (Malang Title Song) -->
+    <div id="player"></div>
+    <!-- Audio for cute sound on YES -->
+    <audio id="yaySound" src="https://www.soundjay.com/misc/sounds/bell-ringing-05.wav" preload="auto"></audio>
+
+    <script>
+        // Initialize EmailJS with demo keys (these are placeholder/example keys from EmailJS docs; in a real scenario, replace with your own)
+        // Note: EmailJS requires an account for actual sending; these are for demonstration and may not work without setup.
+        emailjs.init({
+            publicKey: 'demo_public_key', // Placeholder; replace with real public key if needed
+        });
+
+        // YouTube player variables
+        let player;
+        // Load YouTube iframe API and create player for Malang Title Song (video ID: 1HNkGj5gqGY)
+        function onYouTubeIframeAPIReady() {
+            player = new YT.Player('player', {
+                height: '0',
+                width: '0',
+                videoId: '1HNkGj5gqGY', // Malang Title Song video ID
+                playerVars: {
+                    autoplay: 1,
+                    loop: 1,
+                    playlist: '1HNkGj5gqGY', // Loop the same video
+                    controls: 0,
+                    showinfo: 0,
+                    modestbranding: 1,
+                    fs: 0,
+                    cc_load_policy: 0,
+                    iv_load_policy: 3,
+                    autohide: 0
+                },
+                events: {
+                    onReady: onPlayerReady
+                }
+            });
+        }
+        function onPlayerReady(event) {
+            event.target.playVideo(); // Autoplay
+        }
+
+        // Button elements
+        const yesBtn = document.getElementById('yesBtn');
+        const noBtn = document.getElementById('noBtn');
+        const yaySound = document.getElementById('yaySound');
+
+        // Counter for NO clicks
+        let noClickCount = 0;
+
+        // Function to handle YES click
+        function handleYes() {
+            // Show confetti
+            confetti({
+                particleCount: 100,
+                spread: 70,
+                origin: { y: 0.6 }
+            });
+            // Play cute sound
+            yaySound.play();
+            // Alert
+            alert("Yay! She said YES 💖");
+            // Send email with YES and timestamp
+            const timestamp = new Date().toISOString();
+            emailjs.send('demo_service', 'demo_template', { // Placeholder service and template IDs
+                answer: 'YES',
+                timestamp: timestamp
+            }).then(function(response) {
+                console.log('Email sent successfully:', response);
+            }, function(error) {
+                console.log('Email send failed:', error);
+            });
+        
+
+        // Function to handle NO click
+        function handleNo() {
+            noClickCount++;
+            // Make NO button smaller
+            noBtn.style.fontSize = `${2 - (noClickCount * 0.2)}em`; // Decrease size
+            // Make YES button bigger
+            yesBtn.style.fontSize = `${2 + (noClickCount * 0.2)}em`; // Increase size
+            // Move NO button randomly (run away)
+            const maxX = window.innerWidth - noBtn.offsetWidth;
+            const maxY = window.innerHeight - noBtn.offsetHeight;
+            const randomX = Math.random() * maxX;
+            const randomY = Math.random() * maxY;
+            noBtn.style.position = 'absolute';
+            noBtn.style.left = `${randomX}px`;
+            noBtn.style.top = `${randomY}px`;
+            // After 5 clicks, treat as YES
+            if (noClickCount >= 5) {
+                alert("Okay fine I choose YES 💘");
+                handleYes();
+            }
+        }
+
+        // Event listeners
+        yesBtn.addEventListener('click', handleYes);
+        noBtn.addEventListener('click', handleNo);
+    </script>
+</body>
+</html>
